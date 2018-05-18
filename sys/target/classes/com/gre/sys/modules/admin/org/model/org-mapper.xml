@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gre.sys.modules.admin.org.dao.IOrgDao">
+  <resultMap  id="orgResultMap" type="OrgModel" >
+    <result property="id" column="id"/>
+    <result property="org_name" column="org_name"/>
+    <result property="org_remark" column="org_remark"/>
+    <result property="parent_id" column="parent_id"/>
+    <result property="type_code" column="type_code"/>
+    <result property="type_value" column="type_value"/>
+  </resultMap>
+  <resultMap type="TreeModel" id="org2treeResultMap">
+    <result property="id" column="id"/>
+    <result property="pid" column="parent_id"/>
+    <result property="text" column="name"/>
+  </resultMap>
+  <sql id="update_sql">
+       <if test="org_name != null and org_name != ''">
+         org_name = #{org_name},
+       </if>
+       <if test="org_remark != null and org_remark != ''">
+         org_remark = #{org_remark},
+       </if>
+       <if test="parent_id != null and parent_id != ''">
+         parent_id =#{parent_id},
+       </if>
+       <if test="type_code != null and type_code != ''">
+         type_code =#{type_code},
+       </if>
+       <if test="type_value != null and type_value != ''">
+         type_value =#{type_value},
+       </if>
+  </sql>
+  <sql id="select_sql">
+       <if test="org_remark != null and org_remark != ''">
+         and org_remark = #{org_remark}
+       </if>
+       <if test="id != null and id != ''">
+         and id = #{id}
+       </if>
+       <if test="org_name != null and org_name != ''">
+         and org_name like CONCAT('%',#{org_name},'%') 
+       </if>
+       <if test="parent_id != null and parent_id != ''">
+         and parent_id = #{parent_id}
+       </if>
+       <if test="type_code != null and type_code != ''">
+         and type_code =#{type_code}
+       </if>
+       <if test="type_value != null and type_value != ''">
+         and type_value =#{type_value}
+       </if>
+  </sql>
+  <insert id="insert" parameterType="OrgModel" useGeneratedKeys="true">
+  	insert into sys_org 
+  	   (org_name,org_remark,parent_id,type_code,type_value) 
+  	values
+  	   (#{org_name},#{org_remark},#{parent_id},#{type_code},#{type_value})
+  </insert>
+  <update id="update" parameterType="OrgModel">
+  	update sys_org
+  	<set>
+  	   <include refid="update_sql"/>
+  	</set>
+  	where id =#{id}
+  </update>
+  <delete id="delete" parameterType="long">
+    delete from  sys_org where id =#{id}
+  </delete>
+  <delete id="deleteList" parameterType="list">
+    delete from  sys_org where id in
+    <foreach collection="list" open="(" close=")" separator="," item="i">
+      #{i}
+    </foreach>
+  </delete>
+  <select id="selectOne" parameterType="long" resultMap="orgResultMap">
+    select * from sys_org where id = #{id}
+  </select>
+  <select id="selectList" parameterType="map" resultMap="orgResultMap">
+    select * from sys_org
+    <where>
+      <include refid="select_sql"/>
+    </where>
+  </select>
+  <select id="selectTreeList" parameterType="map" resultMap="org2treeResultMap">
+    select * from sys_org 
+  </select>
+</mapper>

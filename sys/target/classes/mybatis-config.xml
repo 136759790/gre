@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration     PUBLIC "-//mybatis.org//DTD Config 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+	<typeAliases>
+		<typeAlias alias="UserModel" type="com.gre.api.modules.admin.user.model.UserInfo"/>
+		<typeAlias alias="OrgModel" type="com.gre.api.modules.admin.org.model.Org"/>
+		<typeAlias alias="RoleModel" type="com.gre.api.modules.admin.role.model.Role"/>
+		<typeAlias alias="TreeModel" type="com.gre.api.result.Tree"/>
+		<typeAlias alias="ResModel" type="com.gre.api.modules.admin.resource.model.Resource"/>
+	</typeAliases>
+</configuration>

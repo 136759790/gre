@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gre.sys.modules.admin.role.dao.IRoleDao">
+  <resultMap  id="roleResultMap" type="RoleModel" >
+    <result property="id" column="id"/>
+    <result property="role_name" column="role_name"/>
+    <result property="role_code" column="role_code"/>
+    <result property="role_remark" column="role_remark"/>
+    <result property="role_enable" column="role_enable"/>
+  </resultMap>
+  <sql id="update_sql">
+       <if test="role_name != null and role_name != ''">
+         role_name = #{role_name},
+       </if>
+       <if test="role_code != null and role_code != ''">
+         role_code = #{role_code},
+       </if>
+       <if test="role_remark != null and role_remark != ''">
+         role_remark =#{role_remark},
+       </if>
+       <if test="role_enable != null and role_enable != ''">
+         role_enable =#{role_enable},
+       </if>
+  </sql>
+  <sql id="select_sql">
+       <if test="role_code != null and role_code != ''">
+         and t.role_code = #{role_code}
+       </if>
+       <if test="id != null and id != ''">
+         and t.id = #{id}
+       </if>
+       <if test="role_name != null and role_name != ''">
+         and t.role_name like CONCAT('%',#{role_name},'%') 
+       </if>
+       <if test="role_remark != null and role_remark != ''">
+         and t.role_remark like CONCAT('%',#{role_remark},'%') 
+       </if>
+       <if test="type_code != null and type_code != ''">
+         and t.role_enable =#{role_enable}
+       </if>
+       <if test="user_id != null and user_id != ''">
+         and exists (select 1 from sys_role_user m where m.role_id = t.id and m.user_id = #{user_id}  )
+       </if>
+       <if test="res_id != null and res_id != ''">
+         and exists (select 1 from sys_role_res m where m.role_id = t.id and m.res_id = #{res_id}  )
+       </if>
+  </sql>
+  <insert id="insert" parameterType="RoleModel" useGeneratedKeys="true">
+  	insert into sys_role 
+  	   (role_name,role_remark,role_enable,role_code) 
+  	values
+  	   (#{role_name},#{role_remark},#{role_enable},#{role_code})
+  </insert>
+  <update id="update" parameterType="RoleModel">
+  	update sys_role
+  	<set>
+  	   <include refid="update_sql"/>
+  	</set>
+  	where id =#{id}
+  </update>
+  <delete id="delete" parameterType="long">
+    delete from  sys_role where id =#{id}
+  </delete>
+  <delete id="deleteList" parameterType="list">
+    delete from  sys_role where id in
+    <foreach collection="list" open="(" close=")" separator="," item="i">
+      #{i}
+    </foreach>
+  </delete>
+  <select id="selectOne" parameterType="long" resultMap="roleResultMap">
+    select * from sys_role where id = #{id}
+  </select>
+  <select id="selectList" parameterType="map" resultMap="roleResultMap">
+    select * from sys_role t
+    <where>
+      <include refid="select_sql"/>
+    </where>
+  </select>
+</mapper>

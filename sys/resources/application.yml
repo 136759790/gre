@@ -1,0 +1,44 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: dubbo-sys 
+  datasource:
+    url: jdbc:mysql://localhost:3306/springmvc
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      initial-size: 5
+      max-active: 10 
+      time-between-log-stats-millis: 300000 
+  http:
+    encoding:
+      charset: UTF-8  
+      enabled: true  
+      force: true 
+  redis:
+    host: localhost  
+    port: 6379  
+dubbo:
+  application:
+    name: dubbo-sys 
+    id:  dubbo-sys 
+  protocol:
+    id: dubbo
+    name: dubbo
+    port: 12345
+  registry:
+    address: zookeeper://localhost:2181
+  scan:
+    base-packages:
+      -com.gre
+mybatis:
+  type-aliases-package: com.gre
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:com/**/*-mapper.xml
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

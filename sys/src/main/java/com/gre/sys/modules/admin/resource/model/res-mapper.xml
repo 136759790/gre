@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gre.sys.modules.admin.resource.dao.IResDao">
+  <resultMap  id="resResultMap" type="ResModel" >
+    <result property="id" column="id"/>
+    <result property="res_name" column="res_name"/>
+    <result property="res_code" column="res_code"/>
+    <result property="res_remark" column="res_remark"/>
+    <result property="res_enable" column="res_enable"/>
+    <result property="res_type" column="res_type"/>
+    <result property="res_url" column="res_url"/>
+    <result property="parent_id" column="parent_id"/>
+    <result property="res_order" column="res_order"/>
+    <result property="icon" column="icon"/>
+  </resultMap>
+  <sql id="update_sql">
+       <if test="res_order != null and res_order != ''">
+         res_order = #{res_order},
+       </if>
+       <if test="parent_id != null and parent_id != ''">
+         parent_id = #{parent_id},
+       </if>
+       <if test="res_url != null and res_url != ''">
+         res_url = #{res_url},
+       </if>
+       <if test="res_name != null and res_name != ''">
+         res_name = #{res_name},
+       </if>
+       <if test="res_code != null and res_code != ''">
+         res_code = #{res_code},
+       </if>
+       <if test="res_remark != null and res_remark != ''">
+         res_remark =#{res_remark},
+       </if>
+       <if test="res_enable != null and res_enable != ''">
+         res_enable =#{res_enable},
+       </if>
+       <if test="res_type != null and res_type != ''">
+         res_type =#{res_type},
+       </if>
+       <if test="icon != null and icon != ''">
+         icon =#{icon},
+       </if>
+  </sql>
+  <sql id="select_sql">
+       <if test="parent_id != null and parent_id != ''">
+         and t.parent_id = #{parent_id}
+       </if>
+       <if test="res_order != null and res_order != ''">
+         and t.res_order = #{res_order}
+       </if>
+       <if test="res_url != null and res_url != ''">
+         and t.res_url = #{res_url}
+       </if>
+       <if test="res_code != null and res_code != ''">
+         and t.res_code = #{res_code}
+       </if>
+       <if test="id != null and id != ''">
+         and t.id = #{id}
+       </if>
+       <if test="res_name != null and res_name != ''">
+         and t.res_name like CONCAT('%',#{res_name},'%') 
+       </if>
+       <if test="res_remark != null and res_remark != ''">
+         and t.res_remark like CONCAT('%',#{res_remark},'%') 
+       </if>
+       <if test="type_code != null and type_code != ''">
+         and t.res_enable =#{res_enable}
+       </if>
+       <if test="res_type != null and res_type != ''">
+         and t.res_type =#{res_type}
+       </if>
+       <if test="role_id != null and role_id !=''">
+       	 and exists (select 1 from sys_role_res r where t.id=r.res_id and r.role_id=#{role_id})
+       </if>
+       <!-- 用户id -->
+       <if test="user_id != null and user_id !=''">
+       	 and exists (select 1 from sys_role_res r where t.id=r.res_id and r.role_id in (
+       	 	select role_id from sys_role_user where user_id=#{user_id}
+       	 ))
+       </if>
+  </sql>
+  <insert id="insert" parameterType="ResModel" useGeneratedKeys="true">
+  	insert into sys_res 
+  	   (res_name,res_remark,res_enable,res_code,res_type,res_url,res_order,parent_id,icon) 
+  	values
+  	   (#{res_name},#{res_remark},#{res_enable},#{res_code},#{res_type},#{res_url},#{res_order},#{parent_id},#{icon})
+  </insert>
+  <update id="update" parameterType="ResModel">
+  	update sys_res
+  	<set>
+  	   <include refid="update_sql"/>
+  	</set>
+  	where id =#{id}
+  </update>
+  <delete id="delete" parameterType="long">
+    delete from  sys_res where id =#{id}
+  </delete>
+  <delete id="deleteList" parameterType="list">
+    delete from  sys_res where id in
+    <foreach collection="list" open="(" close=")" separator="," item="i">
+      #{i}
+    </foreach>
+  </delete>
+  <select id="selectOne" parameterType="long" resultMap="resResultMap">
+    select * from sys_res where id = #{id}
+  </select>
+  <select id="selectList" parameterType="map" resultMap="resResultMap">
+    select * from sys_res t
+    <where>
+      <include refid="select_sql"/>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gre.sys.modules.admin.userinfo.dao.IUserInfoDao">
+  <resultMap  id="userinfoResultMap" type="UserInfo" >
+    <result property="id" column="id"/>
+    <result property="username" column="username"/>
+    <result property="password" column="password"/>
+    <result property="nickname" column="nickname"/>
+    <result property="email" column="email"/>
+    <result property="age" column="age"/>
+    <result property="phonenumber" column="phonenumber"/>
+    <result property="telephone" column="telephone"/>
+    <result property="address" column="address"/>
+    <result property="create_time" column="create_time" jdbcType="TIMESTAMP" javaType="DATE" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+    <result property="order" column="order"/>
+    <collection property="orgs" column="id" select="selectOrgsByUserId"></collection>
+    
+  </resultMap>
+  <sql id="update_sql">
+       <if test="username != null and username != ''">
+         username = #{username},
+       </if>
+       <if test="password != null and password != ''">
+         password = #{password},
+       </if>
+       <if test="nickname != null and nickname != ''">
+         nickname =#{nickname},
+       </if>
+       <if test="email != null and email != ''">
+         email =#{email},
+       </if>
+       <if test="age != null and age != ''">
+         age =#{age},
+       </if>
+       <if test="phonenumber != null and phonenumber != ''">
+         phonenumber =#{phonenumber},
+       </if>
+       <if test="telephone != null and telephone != ''">
+         telephone =#{telephone},
+       </if>
+       <if test="address != null and address != ''">
+         address =#{address},
+       </if>
+       <if test="order != null and order != ''">
+         order =#{order},
+       </if>
+       <!-- mybatis java的date类型不能和空字符串比较 -->
+       <if test="create_time != null">
+         create_time =#{create_time,jdbcType=TIMESTAMP},
+       </if>
+  </sql>
+  <sql id="select_sql">
+       <if test="username != null and username != ''">
+         and su.username = #{username}
+       </if>
+       <if test="id != null and id != ''">
+         and su.id = #{id}
+       </if>
+       <if test="password != null and password != ''">
+         and su.password = #{password}
+       </if>
+       <if test="nickname != null and nickname != ''">
+         and su.nickname like CONCAT('%',#{nickname},'%') 
+       </if>
+       <if test="email != null and email != ''">
+         and su.email = #{email}
+       </if>
+       <if test="age != null and age != ''">
+         and su.age = #{age}
+       </if>
+       <if test="phonenumber != null and phonenumber != ''">
+        and  su.phonenumber =#{phonenumber}
+       </if>
+       <if test="telephone != null and telephone != ''">
+        and su.telephone =#{telephone}
+       </if>
+       <if test="address != null and address != ''">
+         and su.address =#{address}
+       </if>
+       <!-- mybatis java的date类型不能和空字符串比较 -->
+       <if test="create_time_start != null">
+         and su.create_time >= #{create_time_start,jdbcType=TIMESTAMP}
+       </if>
+       <if test="create_time_end != null">
+         <![CDATA[ and su.create_time <= #{create_time_end,jdbcType=TIMESTAMP} ]]>
+       </if>
+       <!-- 根据角色ID查询人员列表 -->
+       <if test="role_id != null and role_id !=''">
+        and exists(
+          select 1 from sys_role_user sru where sru.role_id = #{role_id} and sru.user_id=su.id
+        )
+       </if>
+  </sql>
+  <insert id="insert" parameterType="UserModel" keyProperty="id" useGeneratedKeys="true">
+  	insert into sys_userinfo(
+  		username,password,nickname,email,age,
+  		phonenumber,telephone,address,create_time,u_order
+  	)values(
+  		#{username},#{password},#{nickname},#{email},#{age},
+  		#{phonenumber},#{telephone},#{address},#{create_time,jdbcType=DATE},#{u_order}
+  	)
+  </insert>
+  <update id="update" parameterType="UserInfo">
+  	update sys_userinfo
+  	<set>
+  	   <include refid="update_sql"/>
+  	</set>
+  	where id =#{id}
+  </update>
+  <delete id="delete" parameterType="long">
+    delete from  sys_userinfo where id =#{id}
+  </delete>
+  <delete id="deleteList" parameterType="list">
+    delete from  sys_userinfo where id in
+    <foreach collection="list" open="(" close=")" separator="," item="i">
+      #{i}
+    </foreach>
+  </delete>
+  <select id="selectOne" parameterType="int" resultMap="userinfoResultMap">
+    select * from sys_userinfo where id = #{id}
+  </select>
+  <select id="selectOneByName" parameterType="string" resultMap="userinfoResultMap">
+    select * from sys_userinfo where username = #{username}
+  </select>
+  <select id="selectList" parameterType="com.gre.api.modules.admin.user.model.UserInfoParam" resultMap="userinfoResultMap">
+    select * from sys_userinfo su
+    <where>
+      <include refid="select_sql"/>
+    </where>
+    <if test="orderby !=null and orderby != ''">
+      order by ${orderby} ${sort}
+    </if>
+  </select>
+  <select id="selectOrgsByUserId" parameterType="long" resultType="OrgModel">
+    select * from sys_org so where exists 
+    (select 1 from sys_org_user sou where so.id=sou.org_id and  sou.user_id =#{user_id})
+  </select>
+</mapper>
