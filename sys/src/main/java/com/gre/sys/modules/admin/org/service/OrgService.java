@@ -17,7 +17,7 @@ import com.gre.api.utils.UtilTree;
 import com.gre.sys.modules.admin.org.dao.IOrgDao;
 
 @Service
-@com.alibaba.dubbo.config.annotation.Service
+@com.alibaba.dubbo.config.annotation.Service(interfaceName="com.gre.api.modules.admin.org.service.IOrgService")
 public class OrgService implements IOrgService{
 	@Autowired
 	IOrgDao orgDao;

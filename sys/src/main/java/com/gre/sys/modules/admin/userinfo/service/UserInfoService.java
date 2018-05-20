@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.gre.api.modules.admin.reference.model.RoleUser;
-import com.gre.api.modules.admin.reference.service.IReferenceService;
 import com.gre.api.modules.admin.user.model.UserInfo;
 import com.gre.api.modules.admin.user.model.UserInfoParam;
 import com.gre.api.modules.admin.user.service.IUserInfoService;
@@ -24,7 +23,7 @@ import com.gre.api.result.PageInfo;
 import com.gre.api.utils.UtilPage;
 import com.gre.sys.modules.admin.userinfo.dao.IUserInfoDao;
 @Component
-@Service
+@Service(interfaceName="com.gre.api.modules.admin.user.service.IUserInfoService")
 public class UserInfoService implements IUserInfoService{
 	@Autowired
 	IUserInfoDao userInfoDao;

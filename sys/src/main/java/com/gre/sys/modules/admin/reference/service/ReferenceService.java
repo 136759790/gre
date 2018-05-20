@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gre.api.modules.admin.reference.model.OrgUser;
 import com.gre.api.modules.admin.reference.model.RoleRes;
@@ -16,7 +17,7 @@ import com.gre.api.utils.UtilPage;
 import com.gre.sys.modules.admin.reference.dao.IReferenceDao;
 
 @Service
-@com.alibaba.dubbo.config.annotation.Service
+@com.alibaba.dubbo.config.annotation.Service(interfaceName="com.gre.api.modules.admin.reference.service.IReferenceService")
 public class ReferenceService implements IReferenceService{
 	@Autowired
 	IReferenceDao referenceDao;
@@ -30,7 +31,8 @@ public class ReferenceService implements IReferenceService{
 	public void insertRoleUser(RoleUser roleUser) {
 		referenceDao.insertRoleUser(roleUser);
 	}
-
+	
+	@Transactional
 	@Override
 	public void insertRoleRes(RoleRes roleRes) {
 		referenceDao.insertRoleRes(roleRes);
