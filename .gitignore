@@ -3,6 +3,7 @@
 *.prefs
 *.bak
 *.project
+*.class
 .classpath
 /.metadata/
 /RemoteSystemsTempFiles/
