@@ -34,10 +34,10 @@ public class BaseController {
 	}
 	@ApiOperation("登陆系统")
 	@PostMapping("login")
-	public String login(String username,String password){
+	public Result login(String username,String password){
 		UsernamePasswordToken token =new UsernamePasswordToken(username, password);
 		SecurityUtils.getSubject().login(token);
-		return "redirect:/welcome";
+		return UtilResult.success("login success");
 	}
 	@ApiOperation("跳转到首页")
 	@GetMapping("welcome")

@@ -3,6 +3,8 @@ package com.gre.gateway.config;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.servlet.Filter;
+
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import com.gre.gateway.auth.AuthRealm;
+import com.gre.gateway.auth.filter.ExtendFormAuthenticationFilter;
 
 
 @Configuration
@@ -22,9 +25,13 @@ public class ShiroConfiguration {
 	public ShiroFilterFactoryBean shiroFilter(org.apache.shiro.mgt.SecurityManager  securityManager){
 		ShiroFilterFactoryBean bean =new ShiroFilterFactoryBean();
 		bean.setSecurityManager(securityManager);
-		bean.setLoginUrl("/toLogin");
+//		bean.setLoginUrl("/toLogin");
 		bean.setSuccessUrl("/welcome");
 		bean.setUnauthorizedUrl("/403");
+		Map<String, Filter> relations= bean.getFilters();
+		System.out.println("-----------------------"+relations);
+		relations.put("authc", extendFormAuthenticationFilter());
+		bean.setFilters(relations);
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
 		filterChainDefinitionMap.put("/easyui/**", "anon");
 		filterChainDefinitionMap.put("/sys/**", "anon");
@@ -63,5 +70,14 @@ public class ShiroConfiguration {
 	public SessionDAO getSessionDao(){
 		SessionDAO sessionDAO =new EnterpriseCacheSessionDAO();
 		return sessionDAO;
+	}
+	
+	public ExtendFormAuthenticationFilter extendFormAuthenticationFilter(){
+		ExtendFormAuthenticationFilter filter= new ExtendFormAuthenticationFilter();
+		filter.setUsernameParam("username");
+		filter.setPasswordParam("password");
+		filter.setRememberMeParam("rememberMe");
+		filter.setLoginUrl("/login");
+		return filter;
 	}
 }
