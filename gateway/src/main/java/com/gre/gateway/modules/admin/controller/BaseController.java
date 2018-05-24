@@ -34,9 +34,15 @@ public class BaseController {
 	}
 	@ApiOperation("登陆系统")
 	@PostMapping("login")
+	@ResponseBody
 	public Result login(String username,String password){
 		UsernamePasswordToken token =new UsernamePasswordToken(username, password);
-		SecurityUtils.getSubject().login(token);
+		try {
+			SecurityUtils.getSubject().login(token);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return UtilResult.error(e.getMessage());
+		}
 		return UtilResult.success("login success");
 	}
 	@ApiOperation("跳转到首页")
